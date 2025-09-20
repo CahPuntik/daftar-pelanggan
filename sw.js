@@ -1,16 +1,15 @@
-const CACHE_NAME = "app-cache-" + new Date().getTime();
+const CACHE_NAME = "app-cache-v2"; // ubah versinya tiap kali update
 const urlsToCache = [
   "./",
   "./index.html",
-  "./style.css",
+  "./style.css",     // tambahkan CSS agar ikut ke-cache
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png"
 ];
 
-// Install Service Worker
+// Install
 self.addEventListener("install", (event) => {
-  self.skipWaiting(); // langsung aktifkan SW baru
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache);
@@ -18,14 +17,14 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate Service Worker
+// Activate (hapus cache lama)
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            return caches.delete(cache); // hapus cache lama
+            return caches.delete(cache);
           }
         })
       );
@@ -33,17 +32,11 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch dengan strategi network-first
+// Fetch
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
-        return response;
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
   );
 });
