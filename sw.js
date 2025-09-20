@@ -2,7 +2,6 @@ const CACHE_NAME = "app-cache-v2"; // ubah versinya tiap kali update
 const urlsToCache = [
   "./",
   "./index.html",
-  "./style.css",     // tambahkan CSS agar ikut ke-cache
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png"
