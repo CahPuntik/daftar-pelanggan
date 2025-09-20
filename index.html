@@ -5,6 +5,9 @@
     <title>Daftar Pelanggan</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+
     <style>
         :root{
             --bg:#0f1724;
@@ -429,5 +432,13 @@
     // initial load
     load();
     </script>
+    <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch(err => console.error("SW reg failed:", err));
+}
+</script>
+
 </body>
 </html>
