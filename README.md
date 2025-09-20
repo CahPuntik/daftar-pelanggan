@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <title>Daftar Pelanggan</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#0f1724;
+            --card:#0b1220;
+            --muted:#94a3b8;
+            --text:#e6eef6;
+            --accent:#06b6d4;
+            --danger:#ff6b6b;
+            --glass: rgba(255,255,255,0.03);
+            --radius:12px;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+            background:linear-gradient(180deg,#071029 0%, #071b2a 60%);
+            color:var(--text);
+            padding:28px;
+            -webkit-font-smoothing:antialiased;
+        }
+
+        .app{
+            max-width:1100px;
+            margin:0 auto;
+        }
+
+        header{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:16px;
+            margin-bottom:18px;
+        }
+        .brand{
+            display:flex;
+            gap:14px;
+            align-items:center;
+        }
+        .logo{
+            width:48px;height:48px;border-radius:10px;
+            background:linear-gradient(135deg,var(--accent),#7c3aed);
+            display:flex;align-items:center;justify-content:center;font-weight:700;
+            box-shadow:0 6px 18px rgba(3,7,18,0.6);
+        }
+        h1{font-size:18px;margin:0}
+        p.lead{margin:0;color:var(--muted);font-size:13px}
+
+        .card{
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius:var(--radius);
+            padding:16px;
+            box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+            border:1px solid rgba(255,255,255,0.03);
+        }
+
+        .controls{
+            display:flex;
+            gap:12px;
+            align-items:center;
+        }
+
+        /* search */
+        .search-wrap{display:flex;align-items:center;gap:8px}
+        .search-input{
+            width:320px;
+            padding:8px 12px;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,0.06);
+            background:transparent;color:var(--text);
+            outline:none;font-size:13px;
+        }
+        @media (max-width:900px){ .search-input{width:160px} }
+
+        .btn{
+            background:var(--accent);
+            color:#062024;
+            padding:8px 12px;
+            border-radius:10px;
+            border:none;
+            font-weight:600;
+            cursor:pointer;
+            display:inline-flex;
+            gap:8px;
+            align-items:center;
+        }
+        .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
+        .btn.danger{background:var(--danger);color:#2b0710}
+
+        form#form{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:12px;
+            align-items:end;
+            margin-top:12px;
+        }
+        label{display:block;font-size:13px;color:var(--muted)}
+        input[type="text"], input[type="tel"], textarea{
+            width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);
+            background:var(--glass);color:var(--text);outline:none;
+        }
+        textarea{resize:vertical;min-height:54px}
+        .col-6{grid-column:span 6}
+        .col-4{grid-column:span 4}
+        .col-3{grid-column:span 3}
+        .col-12{grid-column:span 12}
+
+        /* table */
+        .table-wrap{margin-top:18px;overflow:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+        table{width:100%;border-collapse:collapse;min-width:880px}
+        thead th{position:sticky;top:0;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter:blur(4px);padding:12px;text-align:left;font-size:13px;color:var(--muted)}
+        tbody td{padding:12px;border-top:1px solid rgba(255,255,255,0.02);font-size:14px;color:var(--text)}
+        tbody tr:hover td{background:rgba(255,255,255,0.01)}
+        tr:nth-child(even) td{background:transparent}
+        .muted{color:var(--muted);font-size:13px}
+
+        .actions button{
+            background:transparent;border:0;padding:6px;border-radius:8px;color:var(--muted);cursor:pointer;
+        }
+        .actions button:hover{background:rgba(255,255,255,0.02);color:var(--text)}
+        .chip{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-size:13px;color:var(--muted)}
+
+        /* responsive */
+        @media (max-width:900px){
+            .col-6{grid-column:span 12}
+            .col-4{grid-column:span 12}
+            .col-3{grid-column:span 12}
+            form#form{grid-auto-rows:auto}
+            table{min-width:720px}
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <div class="brand">
+                <div class="logo">FRA</div>
+                <div>
+                    <h1>Fotocopy Roemah Ardha</h1>
+                    <p class="lead">Kelola pelanggan, klik WA untuk buka chat langsung</p>
+                </div>
+            </div>
+            <div class="controls">
+                <div class="search-wrap">
+                    <input id="search" class="search-input" type="search" placeholder="Cari nama, WA, Idpel, Indihome, No HP..." />
+                    <button id="searchClear" class="btn ghost" title="Hapus pencarian">Clear</button>
+                </div>
+                <button class="btn" id="reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 6v6l4 2" stroke="#062024" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Baru</button>
+                <button class="btn ghost" id="export" title="Salin JSON"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Ekspor</button>
+            </div>
+        </header>
+
+        <section class="card" id="formCard" style="display:none">
+            <form id="form" autocomplete="off">
+                <input type="hidden" id="rowId" />
+                <div class="col-6">
+                    <label>Nama</label>
+                    <input id="nama" type="text" placeholder="Nama pelanggan" required>
+                </div>
+                <div class="col-6">
+                    <label>No WhatsApp</label>
+                    <input id="wa" type="tel" placeholder="08xx... (klik untuk buka WA)" required>
+                </div>
+                <div class="col-4">
+                    <label>Idpel Listrik</label>
+                    <input id="idpel" type="text" placeholder="Idpel">
+                </div>
+
+                <div class="col-4">
+                    <label>Indihome</label>
+                    <input id="indihome" type="text" placeholder="Paket / Nomor Indihome">
+                </div>
+                
+                <div class="col-4">
+                    <label>No HP/DANA/GOPAY/OVO</label>
+                    <input id="nohp" type="tel" placeholder="08xx...">
+                </div>
+                <div class="col-4">
+                    <label>Rekening</label>
+                    <input id="rekening" type="text" placeholder="Nomor rekening">
+                </div>
+                <div class="col-12">
+                    <label>Keterangan</label>
+                    <textarea id="ket" placeholder="Catatan tambahan"></textarea>
+                </div>
+                <div style="grid-column:span 12;display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+                    <button type="submit" class="btn" id="save"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M5 12h14M12 5v14" stroke="#062024" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Simpan</button>
+                    <button type="button" class="btn ghost" id="clear">Reset</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card table-wrap" style="margin-top:14px">
+            <table id="table" aria-label="Daftar pelanggan">
+                <thead>
+                    <tr>
+                        <th style="width:56px">No</th>
+                        <th>Nama</th>
+                        <th>No WhatsApp</th>
+                        <th>Idpel Listrik</th>
+                        <th>Indihome</th>
+                        <th>HP/DANA/GOPAY/OVO</th>
+                        <th>Rekening</th>
+                        <th>Keterangan</th>
+                        <th style="width:120px">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+    // GANTI dengan URL Web App yang Anda deploy (Google Apps Script)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkb64egCWa12p8zforkEYGIjPt7Y8h4zxXZtDuJ6mx1BpJEomXtStP_IZ5rNEe0HQv/exec';
+    let ALL_ROWS = []; // cache semua data dari server
+
+    function fmtWA(number){
+        if(number === undefined || number === null) return '';
+        const s = String(number).trim();
+        if(s === '') return '';
+        // hapus semua karakter kecuali digit dan plus di depan
+        const leadingPlus = s.startsWith('+');
+        // ambil hanya digit
+        let n = s.replace(/[^\d]/g, '');
+        // jika awalnya 0 -> ubah ke 62 (Indonesia)
+        if(n.startsWith('0')) n = '62' + n.slice(1);
+        // jika ada leading plus dan nomor sudah berformat negara (mis. +62...) n sudah benar
+        return n;
+    }
+
+    async function api(action, payload){
+        // kirim sebagai application/x-www-form-urlencoded -> tidak memicu preflight CORS
+        const url = SCRIPT_URL;
+        const params = new URLSearchParams();
+        params.append('action', action);
+        for(const k in (payload||{})){
+            if(payload[k] === undefined || payload[k] === null) continue;
+            params.append(k, String(payload[k]));
+        }
+        const opts = {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+            body: params.toString()
+        };
+        const res = await fetch(url, opts);
+        return res.json();
+    }
+
+    async function load(){
+        try{
+            const res = await fetch(SCRIPT_URL + '?action=list');
+            const json = await res.json();
+            ALL_ROWS = json.data || [];
+            applyFilter(); // tampilkan data (terfilter jika ada kata kunci)
+        }catch(err){
+            console.error(err);
+        }
+    }
+
+    // filter / pencarian sederhana (kata dipisah spasi, semua kolom)
+    function applyFilter(){
+        const q = (document.getElementById('search')?.value || '').trim().toLowerCase();
+        if(!q){
+            renderTable(ALL_ROWS);
+            return;
+        }
+        const terms = q.split(/\s+/).filter(Boolean);
+        const filtered = ALL_ROWS.filter(r=>{
+            const hay = ( (r.nama||'') + ' ' + (r.wa||'') + ' ' + (r.idpel||'') + ' ' + (r.indihome||'') + ' ' + (r.nohp||'') + ' ' + (r.rekening||'') + ' ' + (r.ket||'') ).toLowerCase();
+            return terms.every(t => hay.includes(t));
+        });
+        renderTable(filtered);
+    }
+
+    function debounce(fn, wait = 200){
+        let t;
+        return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), wait); };
+    }
+
+    function renderTable(rows){
+        const tbody = document.querySelector('#table tbody');
+        tbody.innerHTML = '';
+        rows.forEach((r, idx) => {
+            // format untuk tampilan: +62...
+            const waDigits = fmtWA(r.wa);               // pastikan dalam format 62...
+            const waDisplay = waDigits ? ('+62' + waDigits) : '-';
+            const waHref = waDigits ? ('https://wa.me/62' + encodeURIComponent(waDigits)) : '#';
+
+            // format No HP juga menjadi +62...
+            const nohpDigits = fmtWA(r.nohp);
+            const nohpDisplay = nohpDigits ? ('0' + nohpDigits) : '-';
+
+            const indihomeDisplay = r.indihome ? escapeHtml(r.indihome) : '-';
+ 
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx+1}</td>
+                <td><div class="chip">${escapeHtml(r.nama)}</div></td>
+                <td><a href="${waHref}" target="_blank" class="muted">${escapeHtml(waDisplay)}</a></td>
+                <td>${escapeHtml(r.idpel)}</td>
+                <td>${indihomeDisplay}</td>
+                <td>${escapeHtml(nohpDisplay)}</td>
+                <td>${escapeHtml(r.rekening)}</td>
+                <td class="muted">${escapeHtml(r.ket)}</td>
+                <td class="actions">
+                    <button data-row="${r.rowId}" class="edit" title="Edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 21l3-1 11-11 1-3-3 1L4 19l-1 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <button data-row="${r.rowId}" class="del" title="Hapus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6M10 6V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                </td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function waLink(raw){
+        const n = fmtWA(raw);
+        if(!n) return '#';
+        return 'https://wa.me/' + encodeURIComponent(n);
+    }
+
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+    document.getElementById('form').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const rowId = document.getElementById('rowId').value;
+        const data = {
+            nama: document.getElementById('nama').value.trim(),
+            wa: document.getElementById('wa').value.trim(),
+            idpel: document.getElementById('idpel').value.trim(),
+            indihome: document.getElementById('indihome').value.trim(),
+            nohp: document.getElementById('nohp').value.trim(),
+            rekening: document.getElementById('rekening').value.trim(),
+            ket: document.getElementById('ket').value.trim(),
+        };
+        if(rowId){
+            data.rowId = parseInt(rowId,10);
+            const resp = await api('update', data);
+            if(resp.success) { resetForm(); load(); }
+            else alert('Gagal update');
+        } else {
+            const resp = await api('add', data);
+            if(resp.success) { resetForm(); load(); }
+            else alert('Gagal tambah');
+        }
+    });
+
+    // tombol "Baru" akan menampilkan / menyembunyikan form dan mengosongkannya
+    document.getElementById('reset').addEventListener('click', () => {
+        const card = document.getElementById('formCard');
+        const isHidden = card.style.display === 'none' || getComputedStyle(card).display === 'none';
+        if (isHidden) {
+            card.style.display = 'block';
+            resetForm();
+            document.getElementById('nama').focus();
+        } else {
+            // sembunyikan form jika sudah tampil
+            card.style.display = 'none';
+        }
+    });
+    // tombol Reset pada form hanya mengosongkan input (tetap tampil)
+    document.getElementById('clear').addEventListener('click', resetForm);
+
+    function resetForm(){
+        document.getElementById('rowId').value = '';
+        ['nama','wa','idpel','nohp','rekening','ket'].forEach(id=>document.getElementById(id).value='');
+        // kosongkan Indihome
+        document.getElementById('indihome').value = '';
+        document.getElementById('nama').focus();
+    }
+
+    document.querySelector('#table tbody').addEventListener('click', async (e)=>{
+        if(e.target.closest('.edit')){
+            const row = parseInt(e.target.closest('button').dataset.row,10);
+            const res = await fetch(SCRIPT_URL + '?action=get&rowId=' + row);
+            const json = await res.json();
+            if(json.data){
+                const r = json.data;
+                // tampilkan form jika tersembunyi
+                const card = document.getElementById('formCard');
+                if (card.style.display === 'none' || getComputedStyle(card).display === 'none') {
+                    card.style.display = 'block';
+                }
+                document.getElementById('rowId').value = r.rowId;
+                document.getElementById('nama').value = r.nama || '';
+                document.getElementById('wa').value = r.wa || '';
+                document.getElementById('idpel').value = r.idpel || '';
+                document.getElementById('indihome').value = r.indihome || '';
+                document.getElementById('nohp').value = r.nohp || '';
+                document.getElementById('rekening').value = r.rekening || '';
+                document.getElementById('ket').value = r.ket || '';
+                window.scrollTo({top:0,behavior:'smooth'});
+            }
+        } else if(e.target.closest('.del')){
+            if(!confirm('Hapus data ini?')) return;
+            const row = parseInt(e.target.closest('button').dataset.row,10);
+            const resp = await api('delete', {rowId: row});
+            if(resp.success) load(); else alert('Gagal hapus');
+        }
+    });
+
+    document.getElementById('export').addEventListener('click', async ()=>{
+        try{
+            // ekspor data yang sudah di-cache (ALL_ROWS) agar sesuai filter terakhir
+            const txt = JSON.stringify(ALL_ROWS || [], null, 2);
+            navigator.clipboard.writeText(txt);
+            alert('Data JSON disalin ke clipboard');
+        }catch(e){ console.error(e); alert('Gagal ekspor'); }
+    });
+
+    // cari: input debounce
+    const searchEl = document.getElementById('search');
+    if(searchEl){
+        searchEl.addEventListener('input', debounce(applyFilter, 250));
+    }
+    const searchClear = document.getElementById('searchClear');
+    if(searchClear){
+        searchClear.addEventListener('click', ()=>{
+            if(searchEl) searchEl.value = '';
+            applyFilter();
+            if(searchEl) searchEl.focus();
+        });
+    }
+
+    // initial load
+    load();
+    </script>
+</body>
+</html>
