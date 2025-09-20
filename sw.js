@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-cache-v2"; // ubah versinya tiap kali update
+const CACHE_NAME = "app-cache-v3"; // ubah versinya tiap kali update
 const urlsToCache = [
   "./",
   "./index.html",
